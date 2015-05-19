@@ -1,5 +1,8 @@
 tools = require './tools'
 path = require 'path'
+fs = require 'fs'
+
+sep = path.sep
 
 detactFekitProject = (onError) ->
 	targetPath = tools.getActiveFilePath() || tools.getProjectPath()
@@ -24,9 +27,8 @@ runFekitCmd = (cmd, fekitPath, cb) ->
 	exec 'fekit '+cmd, {cwd: fekitPath, env:{PATH:envPath}}, cb
 
 getFekitConfig = (projectPath, cb) ->
-	sep = path.sep
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + 'fekit.config'
-	require('fs').readFile 'filePath', (err, data) ->
+	fs.readFile filePath, (err, data) ->
 		obj = null
 		if !err
 			obj = evel '(' + data.toString() + ')'
@@ -40,10 +42,20 @@ getProjectName = (projectPath, cb) ->
 			config.name
 		cb?(null, projectName)
 
+getDevInfo = (projectPath, cb) ->
+	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + '.dev'
+	fs.readFile filePath, (err, data) ->
+		obj = null
+		if !err
+			obj = evel '(' + data.toString() + ')'
+		cb(err, obj)
 
 module.exports = commands =
 
+
+
 	pack: (actions) ->
+		actions.init?('正在执行 fekit pack...')
 		fekitPath = actions.fekitPath || detactFekitProject (msg) ->
 			actions['warn'||'warning']?(msg)
 			actions.finish?()
@@ -61,9 +73,14 @@ module.exports = commands =
 			actions['warn'||'warning']?(msg)
 			actions.finish?()
 		if fekitPath
-			runFekitCmd 'sync', fekitPath,  (err, stdout, stderr) =>
-				if err
-					actions['err'||'error']?('fekit sync 执行失败', stdout, err)
+			getDevInfo fekitPath, (devErr, devObj)
+				if devErr
+					actions['warn'||'warning']?(msg)
 				else
-					actions['succ'||'success']?('fekit sync 执行成功')
-				actions.finish?()
+					getProjectName fekitPath, (_, projectName) ->
+						runFekitCmd 'sync', fekitPath,  (err, stdout, stderr) =>
+							if err
+								actions['err'||'error']?("项目<i>#{projectName}</i>同步失败", stdout, err)
+							else
+								actions['succ'||'success']?('<i>#{projectName}</i>同步到#{devObj.TODO}成功')
+							actions.finish?()

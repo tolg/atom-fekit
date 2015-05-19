@@ -2,8 +2,17 @@
 'context-menu':
   'atom-text-editor': [
     {
-      'label': 'fekit pack'
-      'command': 'fekit:pack'
+      'label': 'fekit'
+      'submenu': [
+        {
+          'label': '打包(Pack)'
+          'command': 'fekit:pack'
+        },
+        {
+          'label': '同步到测试服务器(sync)'
+          'command': 'fekit:sync'
+        }
+      ]
     }
   ]
 'menu': [

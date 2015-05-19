@@ -28,6 +28,11 @@ module.exports = Fekit =
 
 		# Register command that toggles this view
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:pack': => @pack()
+		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:sync': => @sync()
+
+	showLoading: (text) ->
+		@loadingView.setText text
+		@loadingPanel.show()
 
 	showTip: (text, type, duration)->
 		clearTimeout tipTimeoutId if tipTimeoutId
@@ -54,9 +59,16 @@ module.exports = Fekit =
 		# fekitViewState: @fekitView.serialize()
 
 	pack: ->
-		@loadingView.setText '正在执行 fekit pack...'
-		@loadingPanel.show()
 		cmds.pack
+			init: (msg) => @showLoading(msg)
+			succ: (msg) => @showTip(msg, 'success')
+			warn: (msg) => @showTip(msg, 'warn')
+			err: (msg, detail) => @showError(msg, detail)
+			finish: => @loadingPanel.hide()
+
+	sync: ->
+		cmds.sync
+			init: (msg) => @showLoading(msg)
 			succ: (msg) => @showTip(msg, 'success')
 			warn: (msg) => @showTip(msg, 'warn')
 			err: (msg, detail) => @showError(msg, detail)
