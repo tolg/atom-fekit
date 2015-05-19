@@ -1,0 +1,22 @@
+# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'fekit pack'
+      'command': 'fekit:pack'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'fekit'
+      'submenu': [
+        {
+          'label': 'Pack'
+          'command': 'fekit:pack'
+        }
+      ]
+    ]
+  }
+]
