@@ -9,8 +9,12 @@
           'command': 'fekit:pack'
         },
         {
-          'label': '同步到测试服务器(sync)'
+          'label': '同步到远程(sync)'
           'command': 'fekit:sync'
+        },
+        {
+          'label': '初始化fekit项目(init)'
+          'command': 'fekit:initproj'
         }
       ]
     }
@@ -22,8 +26,16 @@
       'label': 'fekit'
       'submenu': [
         {
-          'label': 'Pack'
+          'label': '打包(Pack)'
           'command': 'fekit:pack'
+        },
+        {
+          'label': '同步到远程(sync)'
+          'command': 'fekit:sync'
+        },
+        {
+          'label': '初始化fekit项目(init)'
+          'command': 'fekit:initproj'
         }
       ]
     ]

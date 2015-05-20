@@ -54,4 +54,5 @@ class TipView
         @setMsg(msg)
         @setDetail(detail)
         @detailCtn$.hide()
+        @detailBtn$.html('查看详情')
         @

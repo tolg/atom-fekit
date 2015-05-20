@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "description": "A short description of your package",
   "activationCommands": {
-    "atom-workspace": "fekit:pack"
+    "atom-workspace": ["fekit:pack", "fekit:sync", "fekit:initproj"]
   },
   "repository": "https://github.com/atom/fekit",
   "license": "MIT",

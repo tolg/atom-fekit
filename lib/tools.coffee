@@ -1,7 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 
-module.exports =
+module.exports = tools =
 
 	# 从spath路径开始向上级寻找指定的文件，找到后返回文件所在路径
 	findFileUpward: (spath, fileName) ->
@@ -20,3 +20,17 @@ module.exports =
 
 	getProjectPath: ->
 		atom.project.getPath()
+
+	removeComments: (source) ->
+		source.replace(/\/\/.+\n/g, '')
+
+	parseJSON: (source) ->
+		code = tools.removeComments(source)
+		JSON.parse(code)
+		
+	getEnvPath: ->
+		envPath = process.env.PATH
+		# mac os下atom的node环境变量PATH中不包含/usr/local/bin(fekit指令连接在此)
+		if process.platform is "darwin" and !(/\/usr\/local\/bin/.test envPath)
+			envPath += ':/usr/local/bin'
+		envPath

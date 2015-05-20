@@ -14,16 +14,9 @@ detactFekitProject = (onError) ->
 	else
 		fekitPath
 
-getEnvPath = ->
-	envPath = process.env.PATH
-	# mac os下atom的node环境变量PATH中不包含/usr/local/bin(fekit指令连接在此)
-	if process.platform is "darwin" and !(/\/usr\/local\/bin/.test envPath)
-		envPath += ':/usr/local/bin'
-	envPath
-
 runFekitCmd = (cmd, fekitPath, cb) ->
 	{exec} = require 'child_process'
-	envPath = getEnvPath()
+	envPath = tools.getEnvPath()
 	exec 'fekit '+cmd, {cwd: fekitPath, env:{PATH:envPath}}, cb
 
 getFekitConfig = (projectPath, cb) ->
@@ -31,7 +24,10 @@ getFekitConfig = (projectPath, cb) ->
 	fs.readFile filePath, (err, data) ->
 		obj = null
 		if !err
-			obj = evel '(' + data.toString() + ')'
+			try
+				obj = JSON.parse(data.toString())
+			catch e
+				err = e
 		cb(err, obj)
 
 getProjectName = (projectPath, cb) ->
@@ -47,12 +43,13 @@ getDevInfo = (projectPath, cb) ->
 	fs.readFile filePath, (err, data) ->
 		obj = null
 		if !err
-			obj = evel '(' + data.toString() + ')'
+			try
+				obj = JSON.parse(data.toString())
+			catch e
+				err = e
 		cb(err, obj)
 
 module.exports = commands =
-
-
 
 	pack: (actions) ->
 		actions.init?('正在执行 fekit pack...')
@@ -63,7 +60,7 @@ module.exports = commands =
 			getProjectName fekitPath, (_, projectName) ->
 				runFekitCmd 'pack', fekitPath, (err, stdout, stderr) =>
 					if err
-						actions['err'||'error']?("项目 <i>#{projectName}</i> 执行 fekit pack 失败", stdout, err)
+						actions['err'||'error']?("项目 <i>#{projectName}</i> 执行 fekit pack 失败", stdout, stderr)
 					else
 						actions['succ'||'success']?("项目 <i>#{projectName}</i> 执行 fekit pack 成功")
 					actions.finish?()
@@ -73,14 +70,16 @@ module.exports = commands =
 			actions['warn'||'warning']?(msg)
 			actions.finish?()
 		if fekitPath
-			getDevInfo fekitPath, (devErr, devObj)
+			getDevInfo fekitPath, (devErr, devObj) ->
 				if devErr
 					actions['warn'||'warning']?(msg)
 				else
 					getProjectName fekitPath, (_, projectName) ->
+						targetHost = devObj.dev.host
+						actions.init?('正在同步projectName到targetHost...')
 						runFekitCmd 'sync', fekitPath,  (err, stdout, stderr) =>
 							if err
-								actions['err'||'error']?("项目<i>#{projectName}</i>同步失败", stdout, err)
+								actions['err'||'error']?("项目<i>#{projectName}</i>同步失败", stdout, stderr)
 							else
-								actions['succ'||'success']?('<i>#{projectName}</i>同步到#{devObj.TODO}成功')
+								actions['succ'||'success']?('<i>#{projectName}</i>同步到#{targetHost}成功')
 							actions.finish?()
