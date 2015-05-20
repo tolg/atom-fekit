@@ -25,20 +25,24 @@ class TipView
         @element$[0]
 
     setLabel: (label) ->
-        @label$.html label
+        @label$.text label
         @
 
     setValue: (text) ->
-        @input$.html text
+        @input$.text text
         @
 
     getValue: ->
-        @input$.html()
+        @input$.text()
 
-    bindCancelBtn: (action) ->
+    bindCancel: (action) ->
         @cancelBtn$.on 'click', action
         @
 
-    bindOkBtn: (action) ->
-        @okBtn$.on 'click', action
+    bindOk: (action) ->
+        @okBtn$.on 'click', () =>
+          action?(@getValue())
+        @input$.on 'keyup', (event) =>
+          if event.keyCode is 13
+            action?(@getValue())
         @

@@ -3,7 +3,6 @@ LoadingView = require './views/loading-view'
 ErrorView = require './views/error-view'
 PromptView = require './views/prompt-view'
 {CompositeDisposable} = require 'atom'
-tools = require './tools'
 cmds = require './commands'
 
 tipTimeoutId = null
@@ -57,11 +56,11 @@ module.exports = Fekit =
 		view = new PromptView()
 		view.setLabel(label)
 		.setValue(defaultText)
-		.bindCancelBtn ->
-			onCancel?(view.getValue())
+		.bindCancel ->
+			onCancel?()
 			panel.destroy()
-		.bindOkBtn ->
-			onOk?(view.getValue())
+		.bindOk (value) ->
+			onOk?(value)
 			panel.destroy()
 		panel = atom.workspace.addModalPanel(item: view.getElement(), visible: true)
 
@@ -75,22 +74,9 @@ module.exports = Fekit =
 		# fekitViewState: @fekitView.serialize()
 
 	initProj: ->
-		rootPath = tools.getProjectPath()
-		{spawn} = require 'child_process'
-		envPath = tools.getEnvPath()
-		initer = spawn 'fekit', ['init'], {cwd: rootPath, env:{PATH:envPath}}
-		initer.stdout.on 'data', (data) =>
-			output = data.toString().replace /\[\d+m/g, ''
-			if /^prompt:/.test(output)
-				label = output.replace /prompt:\s/, ''
-				text = label.match(/\((.+)\)$/)?[1] || ''
-				@showPrompt label, text
-				, (value) ->
-					initer.stdin.write(value+'\n')
-				, ->
-					initer.kill()
-			else
-				showTip(output)
+		cmds.initProj
+			info: => @showTip.apply(@, arguments)
+			prompt: @showPrompt
 
 	pack: ->
 		cmds.pack

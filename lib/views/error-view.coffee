@@ -1,4 +1,5 @@
 {$} = require 'atom' #引入jQuery
+tools = require '../tools'
 
 module.exports =
 class TipView
@@ -40,9 +41,7 @@ class TipView
         @
 
     setDetail: (text) ->
-        text = text.replace(/(\[LOG\])/gi, '<span class="text-info">$1</span>')
-        .replace(/(\[ERROR\])/gi, '<span class="text-error">$1</span>')
-        .replace(/(\[WARNING\])/gi, '<span class="text-warning">$1</span>')
+        text = tools.beautifyLog(text)
         @detail$.html text
         @
 

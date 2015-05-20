@@ -27,10 +27,15 @@ module.exports = tools =
 	parseJSON: (source) ->
 		code = tools.removeComments(source)
 		JSON.parse(code)
-		
+
 	getEnvPath: ->
 		envPath = process.env.PATH
 		# mac os下atom的node环境变量PATH中不包含/usr/local/bin(fekit指令连接在此)
 		if process.platform is "darwin" and !(/\/usr\/local\/bin/.test envPath)
 			envPath += ':/usr/local/bin'
 		envPath
+
+	beautifyLog: (text) ->
+		text.replace(/\[(log)\]/gi, "<span class='inline-block highlight-info'>Info</span>")
+		.replace(/\[(error)\]/gi, "<span class='inline-block highlight-error'>Error</span>")
+		.replace(/\[(warning)\]/gi, "<span class='inline-block highlight-warning'>Warning</span>")

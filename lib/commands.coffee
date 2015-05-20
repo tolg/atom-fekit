@@ -1,6 +1,7 @@
 tools = require './tools'
 path = require 'path'
 fs = require 'fs'
+cp = require 'child_process'
 
 sep = path.sep
 
@@ -15,9 +16,8 @@ detactFekitProject = (onError) ->
 		fekitPath
 
 runFekitCmd = (cmd, fekitPath, cb) ->
-	{exec} = require 'child_process'
 	envPath = tools.getEnvPath()
-	exec 'fekit '+cmd, {cwd: fekitPath, env:{PATH:envPath}}, cb
+	cp.exec 'fekit '+cmd, {cwd: fekitPath, env:{PATH:envPath}}, cb
 
 getFekitConfig = (projectPath, cb) ->
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + 'fekit.config'
@@ -50,6 +50,23 @@ getDevInfo = (projectPath, cb) ->
 		cb(err, obj)
 
 module.exports = commands =
+
+	initProj: (actions) ->
+		rootPath = tools.getProjectPath()
+		envPath = tools.getEnvPath()
+		initer = cp.spawn 'fekit', ['init'], {cwd: rootPath, env:{PATH:envPath}}
+		initer.stdout.on 'data', (data) =>
+			output = data.toString().replace /\[\d+m/g, ''
+			if /^prompt:/.test(output)
+				label = output.replace /prompt:\s+/, ''
+				text = label.match(/\((.+)\)\s*$/)?[1] || ''
+				actions.prompt label, text, (value) ->
+					initer.stdin.write(value+'\n')
+				, ->
+					initer.kill()
+			else
+				actions.info(tools.beautifyLog(output))
+
 
 	pack: (actions) ->
 		actions.init?('正在执行 fekit pack...')
