@@ -1,3 +1,4 @@
+{$} = atom
 TipView = require './views/tip-view'
 LoadingView = require './views/loading-view'
 ErrorView = require './views/error-view'
@@ -22,7 +23,7 @@ module.exports = Fekit =
 		@errorView = new ErrorView state.errorViewState
 		@errorPanel = atom.workspace.addModalPanel(item: @errorView.getElement(), visible: false)
 		@errorView.bindCloseBtn =>
-			@errorPanel.hide()
+			@hideError()
 
 		# Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
 		@subscriptions = new CompositeDisposable
@@ -44,13 +45,26 @@ module.exports = Fekit =
 		if !duration? then duration = 3000
 		if duration > 0
 			tipTimeoutId = setTimeout =>
-				@tipPanel.hide()
+				@hideTip()
 			, duration
+		atom.workspaceView.on 'keyup.fekittip', ({keyCode})=>
+			@hideTip() if keyCode is 27
+
+	hideTip: ->
+		clearTimeout tipTimeoutId
+		atom.workspaceView.off('keyup.fekittip')
+		@tipPanel.hide()
 
 	showError: (msg, log, stderr) ->
 		detail = log + if stderr then "\n<pre class='text-error'>#{stderr}</pre>" else ''
-		@errorView.rebuild(msg, detail)
+		@errorView.rebuild msg, detail
 		@errorPanel.show()
+		atom.workspaceView.on 'keyup.fekiterror', ({keyCode}) =>
+			@hideError()
+
+	hideError: ->
+		atom.workspaceView.off 'keyup.fekiterror'
+		@errorPanel.hide()
 
 	showPrompt: (label, defaultText, onOk, onCancel)->
 		view = new PromptView()
