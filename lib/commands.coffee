@@ -32,11 +32,10 @@ getFekitConfig = (projectPath, cb) ->
 
 getProjectName = (projectPath, cb) ->
 	getFekitConfig projectPath, (err, config) ->
-		projectName = if err || !config.name
-			path.basename(projectPath)
+		if err
+			cb?(err, null)
 		else
-			config.name
-		cb?(null, projectName)
+			cb?(config.name || path.basename(projectPath))
 
 getDevInfo = (projectPath, cb) ->
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + '.dev'
@@ -74,13 +73,17 @@ module.exports = commands =
 			actions['warn'||'warning']?(msg)
 			actions.finish?()
 		if fekitPath
-			getProjectName fekitPath, (_, projectName) ->
-				runFekitCmd 'pack', fekitPath, (err, stdout, stderr) =>
-					if err
-						actions['err'||'error']?("项目 <i>#{projectName}</i> 执行 fekit pack 失败", stdout, stderr)
-					else
-						actions['succ'||'success']?("项目 <i>#{projectName}</i> 执行 fekit pack 成功")
-					actions.finish?()
+			getProjectName fekitPath, (err, projectName) ->
+				projectName = if projectName then " `<i>#{projectName}</i>` " else ''
+				if err
+					actions['err'||'error']?("项目#{projectName}执行 fekit pack 失败", '[error]fekit.config解析失败')
+				else
+					runFekitCmd 'pack', fekitPath, (err, stdout, stderr) =>
+						if err
+							actions['err'||'error']?("项目#{projectName}执行 fekit pack 失败", stdout, stderr)
+						else
+							actions['succ'||'success']?("项目#{projectName}执行 fekit pack 成功")
+						actions.finish?()
 
 	sync: (actions) ->
 		fekitPath = actions.fekitPath || detactFekitProject (msg) ->
