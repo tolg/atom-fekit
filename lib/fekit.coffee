@@ -62,7 +62,8 @@ module.exports = Fekit =
 		.bindOk (value) ->
 			onOk?(value)
 			panel.destroy()
-		panel = atom.workspace.addModalPanel(item: view.getElement(), visible: true)
+		panel = atom.workspace.addModalPanel(item: view, visible: true)
+		view.focus()
 
 	deactivate: ->
 		@tipPanel.destroy()

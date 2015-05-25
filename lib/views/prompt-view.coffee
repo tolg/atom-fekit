@@ -1,48 +1,40 @@
-{$} = require 'atom' #引入jQuery
+{$$$, View, TextEditorView} = require 'atom-space-pen-views'
 
 module.exports =
-class TipView
-    constructor: (serializedState) ->
-        # Create root element
-        @element$ = $('<div class="fekit-prompt-panel">')
+class TipView extends View
+  @content: ->
+    @div class: 'fekit-prompt-panel', =>
+      @div class: 'block padded', =>
+        @label outlet:'inputLabel'
+        @subview 'input', new TextEditorView(mini:true)
+      @div class: 'text-center padded', =>
+        @button outlet: 'okBtn', class: 'btn btn-primary', '确定'
+        @button outlet: 'cancelBtn', class: 'btn', '取消'
 
-        @ctn$ = $('<div class="block padded">').appendTo @element$
-        @label$ = $('<label">').appendTo @ctn$
-        @input$ = $('<atom-text-editor mini>').appendTo @ctn$
+  setLabel: (label) ->
+    @inputLabel.text label
+    @
 
-        btnCtn$ = $('<div class="text-center padded">').appendTo @element$
-        @okBtn$ = $('<button class="btn btn-primary">确定</button>').appendTo btnCtn$
-        @cancelBtn$ = $('<button class="btn" style="margin-left:20px;">取消</button>')
-        .appendTo btnCtn$
-    # Returns an object that can be retrieved when package is activated
-    serialize: ->
+  setValue: (text) ->
+    @input.setText text
+    @
 
-    # Tear down any state and detach
-    destroy: ->
-        @element$.remove()
+  getValue: ->
+    @input.getText()
 
-    getElement: ->
-        @element$[0]
+  focus: ->
+    @input.focus()
+    @input.getModel().selectAll()
+    @
 
-    setLabel: (label) ->
-        @label$.text label
-        @
+  bindCancel: (action) ->
+    @cancelBtn.on 'click', action
+    @
 
-    setValue: (text) ->
-        @input$.text text
-        @
-
-    getValue: ->
-        @input$.text()
-
-    bindCancel: (action) ->
-        @cancelBtn$.on 'click', action
-        @
-
-    bindOk: (action) ->
-        @okBtn$.on 'click', () =>
-          action?(@getValue())
-        @input$.on 'keyup', (event) =>
-          if event.keyCode is 13
-            action?(@getValue())
-        @
+  bindOk: (action) ->
+    @okBtn.on 'click', () =>
+      action?(@getValue())
+    @input.on 'keyup', (event) =>
+      if event.keyCode is 13
+        action?(@getValue())
+    @
