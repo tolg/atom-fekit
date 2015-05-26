@@ -22,12 +22,14 @@ runFekitCmd = (cmd, fekitPath, cb) ->
 getFekitConfig = (projectPath, cb) ->
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + 'fekit.config'
 	fs.readFile filePath, (err, data) ->
+		code = data.toString().replace(/\s*\/\/.*\n/g, '')
 		obj = null
 		if !err
 			try
-				obj = JSON.parse(data.toString())
+				obj = JSON.parse(code)
 			catch e
 				err = e
+				err.message = '[error]解析fekit.config发生错误:\n' + e.message
 		cb(err, obj)
 
 getProjectName = (projectPath, cb) ->
@@ -35,7 +37,7 @@ getProjectName = (projectPath, cb) ->
 		if err
 			cb?(err, null)
 		else
-			cb?(config.name || path.basename(projectPath))
+			cb?(null, config.name || path.basename(projectPath))
 
 getDevInfo = (projectPath, cb) ->
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + '.dev'
@@ -76,7 +78,7 @@ module.exports = commands =
 			getProjectName fekitPath, (err, projectName) ->
 				projectName = if projectName then " `<i>#{projectName}</i>` " else ''
 				if err
-					actions['err'||'error']?("项目#{projectName}执行 fekit pack 失败", '[error]fekit.config解析失败')
+					actions['err'||'error']?("项目#{projectName}执行 fekit pack 失败", err.message)
 				else
 					runFekitCmd 'pack', fekitPath, (err, stdout, stderr) =>
 						if err
@@ -94,7 +96,9 @@ module.exports = commands =
 				if devErr
 					actions['warn'||'warning']?(msg)
 				else
-					getProjectName fekitPath, (_, projectName) ->
+					getProjectName fekitPath, (err, projectName) ->
+						if err
+							actions['err'||'error']?('执行`fekit pack`失败', err.message)
 						targetHost = devObj.dev.host
 						actions.init?('正在同步projectName到targetHost...')
 						runFekitCmd 'sync', fekitPath,  (err, stdout, stderr) =>

@@ -60,7 +60,7 @@ module.exports = Fekit =
 		@errorView.rebuild msg, detail
 		@errorPanel.show()
 		atom.workspaceView.on 'keyup.fekiterror', ({keyCode}) =>
-			@hideError()
+			@hideError() if keyCode is 27
 
 	hideError: ->
 		atom.workspaceView.off 'keyup.fekiterror'
