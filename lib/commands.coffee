@@ -87,6 +87,24 @@ module.exports = commands =
 							actions['succ'||'success']?("项目#{projectName}执行 fekit pack 成功")
 						actions.finish?()
 
+	min: (actions) ->
+		actions.init?('正在执行 fekit min...')
+		fekitPath = actions.fekitPath || detactFekitProject (msg) ->
+			actions['warn'||'warning']?(msg)
+			actions.finish?()
+		if fekitPath
+			getProjectName fekitPath, (err, projectName) ->
+				projectName = if projectName then " `<i>#{projectName}</i>` " else ''
+				if err
+					actions['err'||'error']?("项目#{projectName}执行 fekit min 失败", err.message)
+				else
+					runFekitCmd 'min', fekitPath, (err, stdout, stderr) =>
+						if err
+							actions['err'||'error']?("项目#{projectName}执行 fekit min 失败", stdout, stderr)
+						else
+							actions['succ'||'success']?("项目#{projectName}执行 fekit min 成功")
+						actions.finish?()
+
 	sync: (actions) ->
 		fekitPath = actions.fekitPath || detactFekitProject (msg) ->
 			actions['warn'||'warning']?(msg)

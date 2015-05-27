@@ -30,6 +30,7 @@ module.exports = Fekit =
 
 		# Register command that toggles this view
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:pack': => @pack()
+		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:min': => @min()
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:sync': => @sync()
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:initproj': => @initProj()
 
@@ -88,23 +89,21 @@ module.exports = Fekit =
 	serialize: ->
 		# fekitViewState: @fekitView.serialize()
 
+	execSimpleCmd: (cmd) ->
+		cmds[cmd]
+			init: (msg) => @showLoading(msg)
+			succ: (msg) => @showTip(msg, 'success')
+			warn: (msg) => @showTip(msg, 'warn')
+			err: (msg, log, stderr) => @showError(msg, log, stderr)
+			finish: => @loadingPanel.hide()
+
 	initProj: ->
 		cmds.initProj
 			info: => @showTip.apply(@, arguments)
 			prompt: @showPrompt
 
-	pack: ->
-		cmds.pack
-			init: (msg) => @showLoading(msg)
-			succ: (msg) => @showTip(msg, 'success')
-			warn: (msg) => @showTip(msg, 'warn')
-			err: (msg, log, stderr) => @showError(msg, log, stderr)
-			finish: => @loadingPanel.hide()
+	pack: -> @execSimpleCmd 'pack'
 
-	sync: ->
-		cmds.sync
-			init: (msg) => @showLoading(msg)
-			succ: (msg) => @showTip(msg, 'success')
-			warn: (msg) => @showTip(msg, 'warn')
-			err: (msg, log, stderr) => @showError(msg, log, stderr)
-			finish: => @loadingPanel.hide()
+	min: -> @execSimpleCmd 'min'
+
+	sync: -> @execSimpleCmd 'sync'
