@@ -1,7 +1,7 @@
 {
   "name": "atom-fekit",
   "main": "./lib/fekit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Atom编辑器的fekit插件, 可以让前端同学在不离开编辑器的情况下方便地使用fekit",
   "activationCommands": {
     "atom-workspace": [
