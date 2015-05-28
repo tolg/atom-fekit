@@ -1,8 +1,8 @@
 {
-  "name": "fekit",
+  "name": "atom-fekit",
   "main": "./lib/fekit",
   "version": "0.0.0",
-  "description": "A short description of your package",
+  "description": "Atom编辑器的fekit插件, 可以让前端同学在不离开编辑器的情况下方便地使用fekit",
   "activationCommands": {
     "atom-workspace": ["fekit:pack", "fekit:min", "fekit:sync", "fekit:initproj"]
   },

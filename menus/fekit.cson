@@ -28,8 +28,6 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'fekit'
-      'submenu': [
         {
           'label': '打包(Pack)'
           'command': 'fekit:pack'
@@ -46,7 +44,6 @@
           'label': '初始化fekit项目(init)'
           'command': 'fekit:initproj'
         }
-      ]
     ]
   }
 ]
