@@ -1,12 +1,12 @@
 {
   "name": "atom-fekit",
   "main": "./lib/fekit",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Atom编辑器的fekit插件, 可以让前端同学在不离开编辑器的情况下方便地使用fekit",
   "activationCommands": {
     "atom-workspace": ["fekit:pack", "fekit:min", "fekit:sync", "fekit:initproj"]
   },
-  "repository": "https://github.com/atom/fekit",
+  "repository": "https://github.com/tolg/atom-fekit",
   "license": "MIT",
   "engines": {
     "atom": ">=0.174.0 <2.0.0"
