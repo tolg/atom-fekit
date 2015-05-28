@@ -1,9 +1,8 @@
 tools = require './tools'
-path = require 'path'
+{sep, basename} = require 'path'
 fs = require 'fs'
 cp = require 'child_process'
-
-sep = path.sep
+{BufferedProcess} = require 'atom'
 
 detactFekitProject = (onError) ->
 	targetPath = tools.getActiveFilePath() || tools.getProjectPath()
@@ -16,8 +15,9 @@ detactFekitProject = (onError) ->
 		fekitPath
 
 runFekitCmd = (cmd, fekitPath, cb) ->
-	envPath = tools.getEnvPath()
-	cp.exec 'fekit '+cmd, {cwd: fekitPath, env:{PATH:envPath}}, cb
+	cmd = tools.getCompatibleCommand "fekit #{cmd}"
+	cp.exec cmd, {cwd: fekitPath}, cb
+
 
 getFekitConfig = (projectPath, cb) ->
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + 'fekit.config'
@@ -37,7 +37,7 @@ getProjectName = (projectPath, cb) ->
 		if err
 			cb?(err, null)
 		else
-			cb?(null, config.name || path.basename(projectPath))
+			cb?(null, config.name || basename(projectPath))
 
 getDevInfo = (projectPath, cb) ->
 	filePath = projectPath.replace(new RegExp('\\'+sep), '') + sep + '.dev'
@@ -118,10 +118,10 @@ module.exports = commands =
 						if err
 							actions['err'||'error']?('执行`fekit pack`失败', err.message)
 						targetHost = devObj.dev.host
-						actions.init?('正在同步projectName到targetHost...')
+						actions.init?("正在同步 #{projectName} 到 #{targetHost} ...")
 						runFekitCmd 'sync', fekitPath,  (err, stdout, stderr) =>
 							if err
 								actions['err'||'error']?("项目<i>#{projectName}</i>同步失败", stdout, stderr)
 							else
-								actions['succ'||'success']?('<i>#{projectName}</i>同步到#{targetHost}成功')
+								actions['succ'||'success']?("<i>#{projectName}</i> 已成功同步到 #{targetHost}")
 							actions.finish?()
