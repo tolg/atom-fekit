@@ -1,4 +1,4 @@
-{$} = require 'atom' #引入jQuery
+{$} = require 'atom-space-pen-views'
 tools = require '../tools'
 
 module.exports =

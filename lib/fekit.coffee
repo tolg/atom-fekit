@@ -1,4 +1,4 @@
-{$} = atom
+{$} = require 'atom-space-pen-views'
 TipView = require './views/tip-view'
 LoadingView = require './views/loading-view'
 ErrorView = require './views/error-view'
@@ -14,6 +14,7 @@ module.exports = Fekit =
 	subscriptions: null
 
 	activate: (state) ->
+		@wsview = $ atom.views.getView(atom.workspace)
 		@tipView = new TipView(state.tipViewState)
 		@tipPanel = atom.workspace.addModalPanel(item: @tipView.getElement(), visible: false)
 
@@ -48,23 +49,23 @@ module.exports = Fekit =
 			tipTimeoutId = setTimeout =>
 				@hideTip()
 			, duration
-		atom.workspaceView.on 'keyup.fekittip', ({keyCode})=>
+		@wsview.on 'keyup.fekittip', ({keyCode})=>
 			@hideTip() if keyCode is 27
 
 	hideTip: ->
 		clearTimeout tipTimeoutId
-		atom.workspaceView.off('keyup.fekittip')
+		@wsview.off('keyup.fekittip')
 		@tipPanel.hide()
 
 	showError: (msg, log, stderr) ->
 		detail = log + if stderr then "\n<pre class='text-error'>#{stderr}</pre>" else ''
 		@errorView.rebuild msg, detail
 		@errorPanel.show()
-		atom.workspaceView.on 'keyup.fekiterror', ({keyCode}) =>
+		@wsview.on 'keyup.fekiterror', ({keyCode}) =>
 			@hideError() if keyCode is 27
 
 	hideError: ->
-		atom.workspaceView.off 'keyup.fekiterror'
+		@wsview.off 'keyup.fekiterror'
 		@errorPanel.hide()
 
 	showPrompt: (label, defaultText, onOk, onCancel)->

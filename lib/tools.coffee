@@ -16,10 +16,10 @@ module.exports = tools =
 			arguments.callee(dirname(spath), fileName)
 
 	getActiveFilePath: ->
-		atom.workspace.getActiveEditor()?.getPath()
+		atom.workspace.getActiveTextEditor()?.getPath()
 
 	getProjectPath: ->
-		atom.project.getPath()
+		atom.project.getPaths()[0]
 
 	removeComments: (source) ->
 		source.replace(/\/\/.+\n/g, '')
