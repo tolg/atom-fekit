@@ -8,6 +8,7 @@
       "fekit:pack",
       "fekit:min",
       "fekit:sync",
+      "fekit:server",
       "fekit:initproj"
     ]
   },

@@ -10,3 +10,46 @@
 		overflow-y: auto;
 	}
 }
+
+.fekit-server-view{
+	display: flex;
+	.config-side{
+		flex: 4;
+		position: relative;
+		min-width: 15em;
+		max-width: 30em;
+		.line{
+			margin: 10px;
+			font-size: 12px;
+			white-space: nowrap;
+			label,input{
+				margin: 0 5px;
+				display: inline-block;
+			}
+			.port-input{
+				width: 50px;
+			}
+			.path-input{
+				width: 240px;
+			}
+		}
+		.btn-line{
+			margin-top: 30px;
+			text-align: center;
+		}
+	}
+	.terminal-side{
+		flex: 6;
+		background: #000;
+		color: #fff;
+		overflow: auto;
+		flex-flow: column;
+		display: flex;
+		position: relative;
+		height: 100%;
+		pre{
+			background: #000;
+			color: #fff;
+		}
+	}
+}

@@ -3,8 +3,11 @@ TipView = require './views/tip-view'
 LoadingView = require './views/loading-view'
 ErrorView = require './views/error-view'
 PromptView = require './views/prompt-view'
+ServerView = require './views/server-view'
 {CompositeDisposable} = require 'atom'
 cmds = require './commands'
+
+serverUri = 'atom://fekit-server'
 
 tipTimeoutId = null
 
@@ -14,6 +17,9 @@ module.exports = Fekit =
 	subscriptions: null
 
 	activate: (state) ->
+		atom.workspace.addOpener (uri) ->
+			if uri.startsWith(serverUri)
+				new ServerView({uri})
 		@wsview = $ atom.views.getView(atom.workspace)
 		@tipView = new TipView(state.tipViewState)
 		@tipPanel = atom.workspace.addModalPanel(item: @tipView.getElement(), visible: false)
@@ -34,6 +40,7 @@ module.exports = Fekit =
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:min': => @min()
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:sync': => @sync()
 		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:initproj': => @initProj()
+		@subscriptions.add atom.commands.add 'atom-workspace', 'fekit:server': => @server()
 
 	showLoading: (text) ->
 		@loadingView.setText text
@@ -108,3 +115,6 @@ module.exports = Fekit =
 	min: -> @execSimpleCmd 'min'
 
 	sync: -> @execSimpleCmd 'sync'
+
+	server: ->
+		atom.workspace.open(serverUri)

@@ -5,21 +5,24 @@
       'label': 'fekit'
       'submenu': [
         {
-          'label': '打包(Pack)'
+          'label': '打包 (Pack)'
           'command': 'fekit:pack'
         },
         {
-          'label': '压缩/混淆(min)'
+          'label': '压缩/混淆 (min)'
           'command': 'fekit:min'
         },
         {
-          'label': '同步到远程(sync)'
+          'label': '同步到远程 (sync)'
           'command': 'fekit:sync'
         },
         {
-
-          'label': '初始化fekit项目(init)'
+          'label': '初始化fekit项目 (init)'
           'command': 'fekit:initproj'
+        },
+        {
+          'label': '创建本地服务 (server)'
+          'command': 'fekit:server'
         }
       ]
     }
@@ -28,6 +31,8 @@
   {
     'label': 'Packages'
     'submenu': [
+      'label': 'fekit'
+      'submenu': [
         {
           'label': '打包(Pack)'
           'command': 'fekit:pack'
@@ -43,7 +48,12 @@
         {
           'label': '初始化fekit项目(init)'
           'command': 'fekit:initproj'
+        },
+        {
+          'label': '创建本地服务(server)'
+          'command': 'fekit:server'
         }
+      ]
     ]
   }
 ]
