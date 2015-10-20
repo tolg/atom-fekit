@@ -37,7 +37,7 @@ class ServerView extends ScrollView
 				@div class: 'line', 'data-arg': '-m', =>
 					@input outlet: 'checkMock', class: 'enable-check', type: 'checkbox', name: 'mock'
 					@label 'mock', for: 'mock'
-					@input outlet: 'sslInput', type: 'file', class: 'ext-arg', name: 'mock-input', disabled: true
+					@input outlet: 'mockInput', type: 'file', class: 'ext-arg', name: 'mock-input', disabled: true
 				@div class: 'line', 'data-arg': '-l', =>
 					@input class: 'enable-check', type: 'checkbox', name: 'livereload'
 					@label 'livereload', for: 'live reload'
@@ -72,6 +72,8 @@ class ServerView extends ScrollView
 	bindEvents: ->
 		@checkSsl.on 'change', (event) =>
 			@sslInput.attr('disabled', !event.target.checked)
+		@checkMock.on 'change', (event) =>
+			@mockInput.attr('disabled', !event.target.checked)
 		@clearBtn.on 'click', => @clearLog()
 		@launchBtn.click => @startServer()
 		@shutBtn.click => @stopServer()
@@ -101,7 +103,9 @@ class ServerView extends ScrollView
 						args.push extArg.value
 			cmd = tools.getCompatibleCommand "sudo fekit server #{args.join(' ')}"
 
-			@serverProcess = exec cmd, {cwd: cwd}, -> console.log arguments
+			@serverProcess = exec cmd,
+				cwd: cwd
+			, -> console.log arguments
 			@serverProcess.stdout.on 'data', (data) =>
 				@printLog data
 
